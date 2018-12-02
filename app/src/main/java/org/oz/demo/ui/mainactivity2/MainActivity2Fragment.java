@@ -51,13 +51,13 @@ public class MainActivity2Fragment extends Fragment
 
         mBinding.setVm(mViewModel);
 
-        mViewModel.userViewModel.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
+        mViewModel.user.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
         {
             @Override
             public void onPropertyChanged(Observable sender, int propertyId)
             {
                 if (propertyId == BR.name)
-                    Toast.makeText(getActivity(), mViewModel.userViewModel.getName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), mViewModel.user.getName(), Toast.LENGTH_SHORT).show();
 
 
             }
