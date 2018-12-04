@@ -1,15 +1,32 @@
 package org.oz.demo.webservice;
 
-public class WebService
-{
-    private static final WebService ourInstance = new WebService();
+import org.oz.demo.webservice.api.IUserService;
 
-    public static WebService getInstance()
-    {
-        return ourInstance;
+public class WebService implements IWebservice {
+
+
+    private WebService() {
     }
 
-    private WebService()
+    private static class Singleton {
+        private static WebService INSTANCE = new WebService();
+    }
+
+    public static WebService getInstance() {
+        return Singleton.INSTANCE;
+    }
+
+
+    public final IUserService userService;
+
     {
+        userService = ServiceFactory.getService(UserSe);
+
+    }
+
+
+    @Override
+    public IUserService getUserService() throws Exception {
+        return null;
     }
 }
