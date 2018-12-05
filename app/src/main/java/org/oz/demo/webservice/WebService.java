@@ -1,32 +1,45 @@
 package org.oz.demo.webservice;
 
+import org.oz.demo.webservice.api.ITestService;
 import org.oz.demo.webservice.api.IUserService;
 
-public class WebService implements IWebservice {
+public enum WebService implements IWebservice
+{
+
+    INSTANCE
+            {
+                private ITestService testService;
+
+                @Override
+                public ITestService getTestService()
+                {
+                    if (testService == null)
+                        testService = ServiceFactory.getWebService(ITestService.class);
+
+                    return testService;
+                }
 
 
-    private WebService() {
-    }
+                private IUserService userService;
 
-    private static class Singleton {
-        private static WebService INSTANCE = new WebService();
-    }
+                @Override
+                public IUserService getUserService()
+                {
+                    if (userService == null)
+                        userService = ServiceFactory.getWebService(IUserService.class);
 
-    public static WebService getInstance() {
-        return Singleton.INSTANCE;
-    }
+                    return userService;
+                }
+            };
 
-
-    public final IUserService userService;
-
+    private WebService()
     {
-        userService = ServiceFactory.getService(UserSe);
+    }
 
+    public static WebService getInstance()
+    {
+        return INSTANCE;
     }
 
 
-    @Override
-    public IUserService getUserService() throws Exception {
-        return null;
-    }
 }

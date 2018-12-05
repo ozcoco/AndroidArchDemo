@@ -1,12 +1,19 @@
 package org.oz.demo.webservice;
 
-public class ServiceFactory {
+import androidx.annotation.Nullable;
 
-    public static <T extends IService> T getService(Class<? extends T> serviceClass) {
+import org.oz.demo.network.HttpUtils;
 
-        try {
+public class ServiceFactory
+{
+
+    public static <T extends IService> T getService(Class<? extends T> serviceClass)
+    {
+        try
+        {
             return serviceClass.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
+        } catch (IllegalAccessException | InstantiationException e)
+        {
             e.printStackTrace();
         }
 
@@ -14,11 +21,10 @@ public class ServiceFactory {
     }
 
 
-    public static <T extends IApiService> T getWebService(Class<T> serviceClass) {
-
-
-
-        return null;
+    @Nullable
+    public static <T extends IService> T getWebService(Class<? extends T> serviceClass)
+    {
+        return HttpUtils.INSTANCE.getRetrofit().create(serviceClass);
     }
 
 }
