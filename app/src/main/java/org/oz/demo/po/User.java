@@ -2,6 +2,7 @@ package org.oz.demo.po;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
@@ -88,6 +89,9 @@ public class User extends Message implements Parcelable, Observable
 
     public void setName(String name)
     {
+        if (TextUtils.equals(this.name, name))
+            return;
+
         this.name = name;
         notifyChange(BR.name);
     }
@@ -155,5 +159,12 @@ public class User extends Message implements Parcelable, Observable
         {
             propertyChangeRegistry.remove(callback);
         }
+    }
+
+
+    @Override
+    public String toString()
+    {
+        return "User{" + "userId=" + userId + ", name='" + name + '\'' + ", age=" + age + ", gender=" + gender + ", address='" + address + '\'' + '}';
     }
 }

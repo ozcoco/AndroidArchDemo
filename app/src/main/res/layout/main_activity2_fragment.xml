@@ -9,6 +9,10 @@
             name="vm"
             type="org.oz.demo.ui.mainactivity2.MainActivity2ViewModel" />
 
+        <variable
+            name="handles"
+            type="org.oz.demo.ui.mainactivity2.MainActivity2Fragment.Handles" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,6 +20,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.mainactivity2.MainActivity2Fragment">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableEnd="@mipmap/ic_launcher"
+            android:hint="121354637555555555"
+            android:onClick="@{handles::onSelectDate}"
+            android:text="@{vm.dateViewModel.time}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <TextView
             android:id="@+id/message"
@@ -45,10 +61,13 @@
             android:id="@+id/message2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/edit_name"
+            android:hint="user"
+            android:onClick="@{handles::onSkip}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_name" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -27,7 +27,7 @@ public enum HttpUtils
         return retrofit;
     }
 
-    private final static String BASE_URL = "http://192.168.1.107:8080/";
+    private final static String BASE_URL = "http://192.168.0.102:8080/";
 
 
     private HttpUtils()

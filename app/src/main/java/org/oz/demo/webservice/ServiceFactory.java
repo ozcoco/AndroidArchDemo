@@ -22,7 +22,7 @@ public class ServiceFactory
 
 
     @Nullable
-    public static <T extends IService> T getWebService(Class<? extends T> serviceClass)
+    public static <T> T getWebService(Class<T> serviceClass)
     {
         return HttpUtils.INSTANCE.getRetrofit().create(serviceClass);
     }

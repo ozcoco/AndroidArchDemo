@@ -4,24 +4,31 @@ import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import org.oz.demo.po.DateViewModel;
 import org.oz.demo.po.User;
 import org.oz.demo.webservice.WebService;
 
-import io.reactivex.Scheduler;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity2ViewModel extends ViewModel {
+public class MainActivity2ViewModel extends ViewModel
+{
 
     public final ObservableField<String> msg = new ObservableField<>();
+
+    public final ObservableField<String> date = new ObservableField<>();
+
+    public final DateViewModel dateViewModel = new DateViewModel();
+
 
     public final User user = new User();
 
     public MutableLiveData<User> userData;
 
-    public MutableLiveData<User> getUserData() {
+    public MutableLiveData<User> getUserData()
+    {
 
-        if (userData == null) {
+        if (userData == null)
+        {
             userData = new MutableLiveData<>();
             getUser();
         }
@@ -36,20 +43,21 @@ public class MainActivity2ViewModel extends ViewModel {
     }
 
 
-    public void getUser() {
+    public void getUser()
+    {
 
-        webService.getUserService().user(2436)
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.computation())
-                .subscribe(data -> {
+        webService.getUserService().user(2436).observeOn(Schedulers.io()).subscribeOn(Schedulers.computation()).subscribe(data ->
+        {
 
-                            userData.postValue(data);
+            userData.postValue(data);
 
-                        }, throwable -> {
+            user.setName(data.getName());
+
+        }, throwable ->
+        {
 
 
-                        }
-                );
+        });
 
     }
 

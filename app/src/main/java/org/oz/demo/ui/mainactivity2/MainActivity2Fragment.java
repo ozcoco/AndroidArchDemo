@@ -1,10 +1,16 @@
 package org.oz.demo.ui.mainactivity2;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,26 +20,74 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 import org.oz.demo.BR;
+import org.oz.demo.MainActivity;
 import org.oz.demo.R;
 import org.oz.demo.databinding.MainActivity2FragmentBinding;
 import org.oz.demo.po.User;
 
-public class MainActivity2Fragment extends Fragment {
+public class MainActivity2Fragment extends Fragment
+{
 
     private MainActivity2ViewModel mViewModel;
 
     private MainActivity2FragmentBinding mBinding;
 
-    public static MainActivity2Fragment newInstance() {
+    private final Handles handles = new Handles();
+
+    public class Handles
+    {
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        public void onSelectDate(View v)
+        {
+            selectDate();
+
+        }
+
+
+        public void onSkip(View v)
+        {
+
+            startActivityForResult(new Intent(getActivity(), MainActivity.class), 1000);
+        }
+
+
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void selectDate()
+    {
+
+        final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext());
+
+        datePickerDialog.setOnDateSetListener((view, year, month, dayOfMonth) ->
+        {
+
+            final String date = "" + year + month + dayOfMonth;
+
+            mViewModel.dateViewModel.setTime(date);
+
+        });
+
+        datePickerDialog.show();
+
+    }
+
+
+    public static MainActivity2Fragment newInstance()
+    {
         return new MainActivity2Fragment();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.main_activity2_fragment, container, false);
 
         mBinding.setLifecycleOwner(this);
@@ -42,16 +96,21 @@ public class MainActivity2Fragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         mViewModel = ViewModelProviders.of(this).get(MainActivity2ViewModel.class);
 
         mBinding.setVm(mViewModel);
 
-        mViewModel.user.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        mBinding.setHandles(handles);
+
+        mViewModel.user.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
+        {
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
+            public void onPropertyChanged(Observable sender, int propertyId)
+            {
                 if (propertyId == BR.name)
                     Toast.makeText(getActivity(), mViewModel.user.getName(), Toast.LENGTH_SHORT).show();
 
@@ -60,12 +119,12 @@ public class MainActivity2Fragment extends Fragment {
         });
 
 
-        mViewModel.userData.observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                
+        mViewModel.getUserData().observe(this, user ->
+        {
 
-            }
+            mBinding.message2.setText(user.toString());
+
+
         });
 
 
