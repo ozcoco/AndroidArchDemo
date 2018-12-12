@@ -1,5 +1,7 @@
 package org.oz.demo.ui.mainactivity2;
 
+import android.annotation.SuppressLint;
+
 import androidx.databinding.ObservableField;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -43,6 +45,7 @@ public class MainActivity2ViewModel extends ViewModel
     }
 
 
+    @SuppressLint("CheckResult")
     public void getUser()
     {
 

@@ -1,33 +1,27 @@
 package org.oz.demo.ui.mainactivity2;
 
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.databinding.Observable;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import org.oz.demo.BR;
 import org.oz.demo.MainActivity;
 import org.oz.demo.R;
 import org.oz.demo.databinding.MainActivity2FragmentBinding;
-import org.oz.demo.po.User;
+import org.oz.demo.ui.PagingActivity;
 
 public class MainActivity2Fragment extends Fragment
 {
@@ -53,6 +47,14 @@ public class MainActivity2Fragment extends Fragment
         {
 
             startActivityForResult(new Intent(getActivity(), MainActivity.class), 1000);
+        }
+
+
+        public void onTestPaging(View v)
+        {
+
+            startActivity(new Intent(getContext(), PagingActivity.class));
+
         }
 
 
@@ -119,13 +121,7 @@ public class MainActivity2Fragment extends Fragment
         });
 
 
-        mViewModel.getUserData().observe(this, user ->
-        {
-
-            mBinding.message2.setText(user.toString());
-
-
-        });
+        mViewModel.getUserData().observe(this, user -> mBinding.message2.setText(user.toString()));
 
 
     }
