@@ -29,8 +29,7 @@ import org.oz.demo.R;
 import org.oz.demo.databinding.MainActivity2FragmentBinding;
 import org.oz.demo.po.User;
 
-public class MainActivity2Fragment extends Fragment
-{
+public class MainActivity2Fragment extends Fragment {
 
     private MainActivity2ViewModel mViewModel;
 
@@ -38,20 +37,16 @@ public class MainActivity2Fragment extends Fragment
 
     private final Handles handles = new Handles();
 
-    public class Handles
-    {
+    public class Handles {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
-        public void onSelectDate(View v)
-        {
+        public void onSelectDate(View v) {
             selectDate();
 
         }
 
 
-        public void onSkip(View v)
-        {
-
+        public void onSkip(View v) {
             startActivityForResult(new Intent(getActivity(), MainActivity.class), 1000);
         }
 
@@ -60,8 +55,7 @@ public class MainActivity2Fragment extends Fragment
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void selectDate()
-    {
+    private void selectDate() {
 
         final DatePickerDialog datePickerDialog = new DatePickerDialog(getContext());
 
@@ -79,15 +73,13 @@ public class MainActivity2Fragment extends Fragment
     }
 
 
-    public static MainActivity2Fragment newInstance()
-    {
+    public static MainActivity2Fragment newInstance() {
         return new MainActivity2Fragment();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-    {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.main_activity2_fragment, container, false);
 
         mBinding.setLifecycleOwner(this);
@@ -96,8 +88,7 @@ public class MainActivity2Fragment extends Fragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         mViewModel = ViewModelProviders.of(this).get(MainActivity2ViewModel.class);
@@ -106,11 +97,9 @@ public class MainActivity2Fragment extends Fragment
 
         mBinding.setHandles(handles);
 
-        mViewModel.user.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
-        {
+        mViewModel.user.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId)
-            {
+            public void onPropertyChanged(Observable sender, int propertyId) {
                 if (propertyId == BR.name)
                     Toast.makeText(getActivity(), mViewModel.user.getName(), Toast.LENGTH_SHORT).show();
 
