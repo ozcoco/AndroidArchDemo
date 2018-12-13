@@ -23,6 +23,7 @@
 
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tx_select"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableEnd="@mipmap/ic_launcher"
@@ -31,6 +32,25 @@
             android:text="@{vm.dateViewModel.time}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tx_select">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{handles::onTestPaging}"
+                android:text="@string/test_paging" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         <TextView
