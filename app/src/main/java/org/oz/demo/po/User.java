@@ -7,12 +7,16 @@ import android.text.TextUtils;
 import androidx.databinding.Bindable;
 import androidx.databinding.Observable;
 import androidx.databinding.PropertyChangeRegistry;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import org.oz.demo.BR;
 
+@Entity
 public class User extends Message implements Parcelable, Observable
 {
 
+    @PrimaryKey
     private int userId;
 
     private String name;

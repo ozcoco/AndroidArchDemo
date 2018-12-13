@@ -8,8 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.rfid.GlideApp;
-import com.rfid.GlideRequests;
+import org.oz.demo.GlideApp;
+import org.oz.demo.GlideRequests;
 
 public final class ImageLoader {
 

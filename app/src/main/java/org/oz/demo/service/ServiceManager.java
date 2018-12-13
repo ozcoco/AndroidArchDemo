@@ -4,10 +4,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.rfid.rest.IWebservice;
-import com.rfid.rest.WebService;
-import com.rfid.sql.ISQLService;
-import com.rfid.sql.SQLService;
+import org.oz.demo.rest.IWebservice;
+import org.oz.demo.rest.WebService;
+import org.oz.demo.sql.ISQLService;
+import org.oz.demo.sql.SQLService;
 
 public enum ServiceManager implements IServiceManager {
 
