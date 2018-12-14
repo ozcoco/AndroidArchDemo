@@ -102,6 +102,17 @@ dependencies {
     androidTestImplementation "android.arch.navigation:navigation-testing:$nav_version"
 
 
+    def work_version = "1.0.0-alpha13"
+
+    implementation "android.arch.work:work-runtime:$work_version" // use -ktx for Kotlin+Coroutines
+
+    // optional - RxJava2 support
+    implementation "android.arch.work:work-rxjava2:$work_version"
+
+    // optional - Test helpers
+    androidTestImplementation "android.arch.work:work-testing:$work_version"
+
+
     /*** network ***/
     //glide
     def glide_version = "4.8.0"
