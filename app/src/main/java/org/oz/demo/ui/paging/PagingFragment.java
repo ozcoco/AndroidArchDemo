@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,9 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.oz.demo.R;
 import org.oz.demo.databinding.ItemSimpleBinding;
 import org.oz.demo.databinding.PagingFragmentBinding;
-import org.oz.demo.po.User;
 
-import java.util.List;
 import java.util.Objects;
 
 import static androidx.recyclerview.widget.RecyclerView.VERTICAL;
@@ -70,6 +67,7 @@ public class PagingFragment extends Fragment {
         }
 
         mBinding.recycler.setLayoutManager(new LinearLayoutManager(getContext(), VERTICAL, false));
+
 
         mBinding.recycler.setAdapter(new RecyclerView.Adapter<RecycleViewHolder>() {
 
