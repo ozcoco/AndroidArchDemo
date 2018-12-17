@@ -86,7 +86,7 @@ public class PagingFragment extends Fragment {
 
             @Override
             public int getItemCount() {
-                return mViewModel.users.getValue().size();
+                return mViewModel.users.getValue() == null ? 0 : mViewModel.users.getValue().size();
             }
         });
 
