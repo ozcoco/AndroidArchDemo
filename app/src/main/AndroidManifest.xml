@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.oz.demo">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- //获取设备网络状态，禁用后无法获取网络状 -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- //网络权限，当禁用后，无法进行检索等相关业务 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- //读取设备硬件信息，统计数 -->
@@ -24,8 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        android:theme="@style/AppTheme">
-        <activity android:name=".ui.PagingActivity"></activity>
+        <activity android:name=".ui.NotificationActivity"></activity>
+        <activity android:name=".ui.PagingActivity" />
         <activity android:name=".MainActivity2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
