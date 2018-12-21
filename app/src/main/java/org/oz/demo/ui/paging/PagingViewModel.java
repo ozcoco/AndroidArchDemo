@@ -59,7 +59,7 @@ public class PagingViewModel extends AndroidViewModel {
 
         Constraints myConstraints = new Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build();
 
-        OneTimeWorkRequest loadDataWork = new OneTimeWorkRequest.Builder(LoadDataWorker2.class).setInputData(new Data.Builder().putInt("page", 2).build()).build();
+        OneTimeWorkRequest loadDataWork = new OneTimeWorkRequest.Builder(LoadDataWorker2.class).setConstraints(myConstraints).setInputData(new Data.Builder().putInt("page", 2).build()).build();
 
         WorkManager.getInstance().enqueue(loadDataWork);
 

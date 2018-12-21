@@ -49,6 +49,12 @@
                 android:onClick="@{handles::onTestPaging}"
                 android:text="@string/test_paging" />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{handles::onRFID}"
+                android:text="@string/rfid" />
+
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

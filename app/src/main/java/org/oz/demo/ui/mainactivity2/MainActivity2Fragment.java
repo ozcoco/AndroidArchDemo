@@ -22,6 +22,7 @@ import org.oz.demo.MainActivity;
 import org.oz.demo.R;
 import org.oz.demo.databinding.MainActivity2FragmentBinding;
 import org.oz.demo.ui.PagingActivity;
+import org.oz.demo.ui.RFIDActivity;
 
 public class MainActivity2Fragment extends Fragment {
 
@@ -45,13 +46,17 @@ public class MainActivity2Fragment extends Fragment {
         }
 
 
-        public void onTestPaging(View v)
-        {
+        public void onTestPaging(View v) {
 
             startActivity(new Intent(getContext(), PagingActivity.class));
 
         }
 
+        public void onRFID(View v) {
+
+            startActivity(new Intent(getContext(), RFIDActivity.class));
+
+        }
 
     }
 

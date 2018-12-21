@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.RxRoom;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -44,22 +45,8 @@ public enum SQLService implements ISQLService {
 
             if (appDatabase == null)
                 appDatabase = Room.databaseBuilder(context,
-                        AppDatabase.class, "AppDB").addCallback(new RoomDatabase.Callback() {
-                    @Override
-                    public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                        super.onCreate(db);
-                    }
+                        AppDatabase.class, "AppDB").build();
 
-                    @Override
-                    public void onOpen(@NonNull SupportSQLiteDatabase db) {
-                        super.onOpen(db);
-                    }
-                }).addMigrations(new Migration(1, 5) {
-                    @Override
-                    public void migrate(@NonNull SupportSQLiteDatabase database) {
-
-                    }
-                }).build();
         }
 
         @Override
