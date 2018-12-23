@@ -9,7 +9,6 @@
             name="vm"
             type="org.oz.demo.ui.rfid.RfidViewModel" />
 
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,6 +16,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.rfid.RfidFragment">
+
+        <RadioGroup
+            android:id="@+id/rdg_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/rdb_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="单标签" />
+
+            <RadioButton
+                android:id="@+id/rdb_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="多标签" />
+
+        </RadioGroup>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tx_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/rdg_mode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/rdg_mode"
+            app:layout_constraintTop_toTopOf="@id/rdg_mode" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
@@ -26,7 +57,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/rdg_mode">
 
         </androidx.recyclerview.widget.RecyclerView>
 
