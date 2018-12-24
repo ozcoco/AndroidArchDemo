@@ -9,23 +9,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.oz.demo.R;
 import org.oz.demo.ui.rfid.RfidFragment;
 
-public class RFIDActivity extends AppCompatActivity
-{
+public class RFIDActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.rfid_activity);
-        if (savedInstanceState == null)
-        {
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, RfidFragment.newInstance()).commitNow();
         }
     }
 
     @Override
-    public boolean onKeyLongPress(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
 
         Log.e("test key event>>>>>>>", String.format("onKeyLongPress keyCode: %d, event: %d , event number: %c", keyCode, event.getAction(), event.getNumber()));
 
@@ -34,8 +30,7 @@ public class RFIDActivity extends AppCompatActivity
 
 
     @Override
-    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event)
-    {
+    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
 
         Log.e("test key event>>>>>>>", String.format("onKeyMultiple keyCode: %d, event: %d , event number: %c", keyCode, event.getAction(), event.getNumber()));
 
@@ -44,8 +39,7 @@ public class RFIDActivity extends AppCompatActivity
 
 
     @Override
-    public boolean onKeyShortcut(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyShortcut(int keyCode, KeyEvent event) {
 
         Log.e("test key event>>>>>>>", String.format("onKeyShortcut keyCode: %d, event: %d , event number: %c", keyCode, event.getAction(), event.getNumber()));
 
@@ -53,8 +47,7 @@ public class RFIDActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event)
-    {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
 
         Log.e("test key event>>>>>>>", String.format("onKeyUp keyCode: %d, event: %d , event number: %c", keyCode, event.getAction(), event.getNumber()));
 
