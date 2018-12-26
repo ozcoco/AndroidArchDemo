@@ -52,8 +52,13 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+<<<<<<< .merge_file_a10484
                 android:onClick="@{handles::onRFID}"
                 android:text="@string/rfid" />
+=======
+                android:onClick="@{handles::onNotification}"
+                android:text="@string/notification" />
+>>>>>>> .merge_file_a12856
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -82,7 +87,6 @@
                 android:hint="@string/message"
                 android:text="@={vm.user.name}" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <TextView
             android:id="@+id/message2"

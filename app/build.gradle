@@ -64,6 +64,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
 
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     // use kapt for Kotlin
     // alternately - if using Java8, use the following instead of lifecycle-compiler
@@ -161,8 +162,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+<<<<<<< .merge_file_a13356
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.viewpager:viewpager:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+=======
+>>>>>>> .merge_file_a11960
 
 }

@@ -22,26 +22,30 @@ import java.util.Objects;
 import static androidx.recyclerview.widget.RecyclerView.VERTICAL;
 
 
-public class PagingFragment extends Fragment {
+public class PagingFragment extends Fragment
+{
 
     private PagingViewModel mViewModel;
 
     private PagingFragmentBinding mBinding;
 
-    public static PagingFragment newInstance() {
+    public static PagingFragment newInstance()
+    {
         return new PagingFragment();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.paging_fragment, container, false);
 
         return mBinding.getRoot();
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(PagingViewModel.class);
         // TODO: Use the ViewModel
@@ -51,13 +55,16 @@ public class PagingFragment extends Fragment {
     }
 
 
-    private void initRecycle() {
+    private void initRecycle()
+    {
 
-        final class RecycleViewHolder extends RecyclerView.ViewHolder {
+        final class RecycleViewHolder extends RecyclerView.ViewHolder
+        {
 
             ItemSimpleBinding itemBinding;
 
-            RecycleViewHolder(@NonNull View itemView) {
+            RecycleViewHolder(@NonNull View itemView)
+            {
                 super(itemView);
 
                 itemBinding = DataBindingUtil.bind(itemView);
@@ -69,24 +76,28 @@ public class PagingFragment extends Fragment {
         mBinding.recycler.setLayoutManager(new LinearLayoutManager(getContext(), VERTICAL, false));
 
 
-        mBinding.recycler.setAdapter(new RecyclerView.Adapter<RecycleViewHolder>() {
+        mBinding.recycler.setAdapter(new RecyclerView.Adapter<RecycleViewHolder>()
+        {
 
             @NonNull
             @Override
-            public RecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            public RecycleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
                 return new RecycleViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_simple, parent, false));
             }
 
             @Override
-            public void onBindViewHolder(@NonNull RecycleViewHolder holder, int position) {
+            public void onBindViewHolder(@NonNull RecycleViewHolder holder, int position)
+            {
 
                 holder.itemBinding.setUser(mViewModel.users.getValue().get(position));
 
             }
 
             @Override
-            public int getItemCount() {
-                return mViewModel.users.getValue() == null ? 0 : mViewModel.users.getValue().size();
+            public int getItemCount()
+            {
+                return mViewModel.users == null || mViewModel.users.getValue() == null ? 0 : mViewModel.users.getValue().size();
             }
         });
 
