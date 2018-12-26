@@ -24,6 +24,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.uhf.scanlable.UHfData;
@@ -43,13 +45,15 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-public class RfidFragment extends Fragment {
+public class RfidFragment extends Fragment
+{
 
     private RfidViewModel mViewModel;
 
     private RfidFragmentBinding mBinding;
 
-    public static RfidFragment newInstance() {
+    public static RfidFragment newInstance()
+    {
         return new RfidFragment();
     }
 
@@ -64,7 +68,8 @@ public class RfidFragment extends Fragment {
     int mode = 0;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -73,12 +78,14 @@ public class RfidFragment extends Fragment {
 
 
     @Override
-    public void onOptionsMenuClosed(Menu menu) {
+    public void onOptionsMenuClosed(Menu menu)
+    {
         super.onOptionsMenuClosed(menu);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.menu_rfid, menu);
@@ -87,9 +94,11 @@ public class RfidFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
 
-        if (item.getItemId() == R.id.action_clear) {
+        if (item.getItemId() == R.id.action_clear)
+        {
 
             mViewModel.inventoryTagMap.setValue(new ArrayList<>());
 
@@ -100,7 +109,8 @@ public class RfidFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.rfid_fragment, container, false);
 
@@ -110,7 +120,8 @@ public class RfidFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         //important
@@ -124,30 +135,39 @@ public class RfidFragment extends Fragment {
 
     }
 
-    private void initToolbar() {
+    private void initToolbar()
+    {
 
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
     }
 
-    private void initView() {
+    private void initView()
+    {
+
 
         /*** 监听Recycler点击事件 ***/
-        mViewModel.itemClickPosition.observe(this, position -> {
+        mViewModel.itemClickPosition.observe(this, position ->
+        {
 
             ToastUtils.info(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "position: %d", position), Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
+
+            NavHostFragment.findNavController(RfidFragment.this).navigate(R.id.action_rfidFragment_to_rfidEditableFragment);
 
         });
 
         /*** 设置功率 ***/
-        mViewModel.power.observe(this, power -> {
+        mViewModel.power.observe(this, power ->
+        {
 
-            if (isConnected) {
+            if (isConnected)
+            {
 
                 UHfData.UHfGetData.SetRfPower(power.byteValue());
 
-            } else {
+            } else
+            {
 
                 isConnected = connectUHF();
 
@@ -178,7 +198,8 @@ public class RfidFragment extends Fragment {
 
     }
 
-    private void initComponent() {
+    private void initComponent()
+    {
 
         mViewModel = ViewModelProviders.of(this).get(RfidViewModel.class);
 
@@ -187,40 +208,47 @@ public class RfidFragment extends Fragment {
     }
 
 
-    private final BroadcastReceiver keyReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver keyReceiver = new BroadcastReceiver()
+    {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
 
             int keyCode = intent.getIntExtra("keyCode", 0);
             // H941
-            if (keyCode == 0) {
+            if (keyCode == 0)
+            {
                 keyCode = intent.getIntExtra("keycode", 0);
             }
 
             boolean keyDown = intent.getBooleanExtra("keydown", false);
 
-            if (keyCode == KeyEvent.KEYCODE_F3) {
+            if (keyCode == KeyEvent.KEYCODE_F3)
+            {
                 //todo
 
                 Log.e("BroadcastReceiver>>>>>>", String.format(Locale.CHINA, "button------>1 : %d", KeyEvent.KEYCODE_F3));
 
                 //                ToastUtils.info(context, String.format(Locale.CHINA, "button : %d", KeyEvent.KEYCODE_F3), Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show();
 
-                if (keyDown) {
+                if (keyDown)
+                {
 
                     //todo
 
                     startPressTime = System.currentTimeMillis();
 
 
-                    if (!isScan) {
+                    if (!isScan)
+                    {
                         isScan = true;
 
                         mViewModel.isScan.setValue(true);
 
                         scanTags();
-                    } else {
+                    } else
+                    {
 
                         isScan = false;
 
@@ -233,7 +261,8 @@ public class RfidFragment extends Fragment {
 
                     scanTags();
 
-                } else {
+                } else
+                {
 
                     //                isScan = false;
                     //
@@ -255,7 +284,8 @@ public class RfidFragment extends Fragment {
 
 
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
 
         //注册扫码按钮广播接收器，监听扫码按钮事件
@@ -267,7 +297,8 @@ public class RfidFragment extends Fragment {
 
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
 
         //注销扫码按钮广播接收器
@@ -275,7 +306,8 @@ public class RfidFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
 
         disconnectUHF();
@@ -284,15 +316,18 @@ public class RfidFragment extends Fragment {
     /**
      * 初始化RFID读写器
      **/
-    private void scanTags() {
+    private void scanTags()
+    {
 
-        if (isConnected) {
+        if (isConnected)
+        {
 
             //得到为累计的数据集合
             final Disposable disposable = Observable.create((ObservableOnSubscribe<UHfData.InventoryTagMap>) emitter ->
             {
 
-                for (; isScan; ) {
+                for (; isScan; )
+                {
                     Log.e("Scan>>>>>>", "scan start> ---------------------------->>>>>>");
 
                     //清除累计的数据
@@ -309,19 +344,24 @@ public class RfidFragment extends Fragment {
 
                     final ArrayMap<String, UHfData.InventoryTagMap> map = mViewModel.arrayMapTags.getValue();
 
-                    if (map != null && map.size() > 0) {
+                    if (map != null && map.size() > 0)
+                    {
                         one:
-                        for (UHfData.InventoryTagMap bean : list) {
-                            if (bean != null && !map.containsKey(bean.strEPC)) {
+                        for (UHfData.InventoryTagMap bean : list)
+                        {
+                            if (bean != null && !map.containsKey(bean.strEPC))
+                            {
                                 emitter.onNext(bean);
 
-                                if (mViewModel.mode.getValue() == 0) {
+                                if (mViewModel.mode.getValue() == 0)
+                                {
                                     isScan = false;
                                     mViewModel.isScan.postValue(false);
                                     break one;
                                 }
 
-                            } else {
+                            } else
+                            {
 
                                 Objects.requireNonNull(getActivity()).runOnUiThread(() -> ToastUtils.info(Objects.requireNonNull(getContext()), "已扫描录入", Gravity.BOTTOM, Toast.LENGTH_SHORT).show());
 
@@ -329,12 +369,15 @@ public class RfidFragment extends Fragment {
 
                         }
 
-                    } else {
+                    } else
+                    {
 
-                        for (UHfData.InventoryTagMap bean : list) {
+                        for (UHfData.InventoryTagMap bean : list)
+                        {
                             emitter.onNext(bean);
 
-                            if (mViewModel.mode.getValue() == 0) {
+                            if (mViewModel.mode.getValue() == 0)
+                            {
                                 isScan = false;
                                 mViewModel.isScan.postValue(false);
                                 break;
@@ -358,7 +401,8 @@ public class RfidFragment extends Fragment {
 
             }, throwable -> ToastUtils.info(Objects.requireNonNull(getContext()), "未知错误", Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show());
 
-        } else {
+        } else
+        {
 
             Snackbar.make(mBinding.recycler, "连接RFID读写器失败！", Snackbar.LENGTH_SHORT).show();
 
@@ -380,7 +424,8 @@ public class RfidFragment extends Fragment {
      * @Time 2018/12/20 14:17
      * @Description 通过串口，连接RFID读写器,  return ,true connected, unable connected
      */
-    private boolean connectUHF() {
+    private boolean connectUHF()
+    {
 
         final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
 
@@ -397,7 +442,8 @@ public class RfidFragment extends Fragment {
      * @Time 2018/12/20 14:23
      * @Description 断开RFID读写器， return, true 成功，false失败
      */
-    private boolean disconnectUHF() {
+    private boolean disconnectUHF()
+    {
         UHfData.lsTagList.clear();
         UHfData.dtIndexMap.clear();
         return UHfData.UHfGetData.CloseUHf() == 0;

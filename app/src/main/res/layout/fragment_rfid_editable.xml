@@ -69,10 +69,7 @@
                     app:hintEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:passwordToggleDrawable="@drawable/ic_check_white_48dp"
-                    app:passwordToggleEnabled="true"
-                    app:passwordToggleTint="xxxxxxxxxxx">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
