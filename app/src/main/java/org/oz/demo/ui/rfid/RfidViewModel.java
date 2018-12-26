@@ -27,8 +27,11 @@ import org.oz.demo.databinding.ItemRfidBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RfidViewModel extends AndroidViewModel
-{
+public class RfidViewModel extends AndroidViewModel {
+
+    public final MutableLiveData<Integer> itemClickPosition = new MutableLiveData<>();
+
+    public final MutableLiveData<Integer> power = new MutableLiveData<>();
 
     public final MutableLiveData<Integer> mode = new MutableLiveData<>();
 
@@ -54,9 +57,10 @@ public class RfidViewModel extends AndroidViewModel
     public final LiveData<String> info = Transformations.map(inventoryTagMap, Object::toString);
 
 
-    public RfidViewModel(@NonNull Application application)
-    {
+    public RfidViewModel(@NonNull Application application) {
         super(application);
+
+        power.setValue(10);
 
         mode.setValue(0);
 
@@ -64,38 +68,34 @@ public class RfidViewModel extends AndroidViewModel
     }
 
 
-    @BindingAdapter({"adapter"})
-    public static void recycleAdapter(RecyclerView recycler, @NonNull LiveData<List<UHfData.InventoryTagMap>> data)
-    {
+    @BindingAdapter({"adapter", "itemClickPosition"})
+    public static void recycleAdapter(RecyclerView recycler, @NonNull LiveData<List<UHfData.InventoryTagMap>> data, MutableLiveData<Integer> itemClickPosition) {
 
-        final class RecyclerHolder extends RecyclerView.ViewHolder
-        {
+        final class RecyclerHolder extends RecyclerView.ViewHolder {
 
             final ItemRfidBinding binding;
 
-            public RecyclerHolder(@NonNull View itemView)
-            {
+            public RecyclerHolder(@NonNull View itemView) {
                 super(itemView);
                 binding = DataBindingUtil.bind(itemView);
             }
         }
 
-        final DecorativeAdapter<RecyclerHolder, UHfData.InventoryTagMap> adapter = new DecorativeAdapter<>(recycler.getContext(), new DecorativeAdapter.IAdapterDecorator<RecyclerHolder, UHfData.InventoryTagMap>()
-        {
+        final DecorativeAdapter<RecyclerHolder, UHfData.InventoryTagMap> adapter = new DecorativeAdapter<>(recycler.getContext(), new DecorativeAdapter.IAdapterDecorator<RecyclerHolder, UHfData.InventoryTagMap>() {
 
             @Override
-            public RecyclerHolder onCreateViewHolder(@NonNull Context context, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType)
-            {
+            public RecyclerHolder onCreateViewHolder(@NonNull Context context, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType) {
 
 
                 return new RecyclerHolder(inflater.inflate(R.layout.item_rfid, parent, false));
             }
 
             @Override
-            public void onBindViewHolder(@NonNull Context context, @NonNull RecyclerHolder holder, @NonNull UHfData.InventoryTagMap data, int position)
-            {
+            public void onBindViewHolder(@NonNull Context context, @NonNull RecyclerHolder holder, @NonNull UHfData.InventoryTagMap data, int position) {
 
                 holder.binding.setBean(data);
+
+                holder.binding.getRoot().setOnClickListener(v -> itemClickPosition.setValue(position));
 
             }
         });

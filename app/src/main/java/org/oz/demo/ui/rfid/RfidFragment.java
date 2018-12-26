@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -117,13 +118,44 @@ public class RfidFragment extends Fragment {
 
         isConnected = connectUHF();
 
-        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
+        initToolbar();
 
         initView();
 
     }
 
+    private void initToolbar() {
+
+        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
+        Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+    }
+
     private void initView() {
+
+        /*** 监听Recycler点击事件 ***/
+        mViewModel.itemClickPosition.observe(this, position -> {
+
+            ToastUtils.info(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "position: %d", position), Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
+
+        });
+
+        /*** 设置功率 ***/
+        mViewModel.power.observe(this, power -> {
+
+            if (isConnected) {
+
+                UHfData.UHfGetData.SetRfPower(power.byteValue());
+
+            } else {
+
+                isConnected = connectUHF();
+
+                UHfData.UHfGetData.SetRfPower(power.byteValue());
+            }
+
+        });
+
         mViewModel.isScan.observe(this, aBoolean ->
         {
             if (mViewModel.mode.getValue() != 0)
@@ -278,6 +310,7 @@ public class RfidFragment extends Fragment {
                     final ArrayMap<String, UHfData.InventoryTagMap> map = mViewModel.arrayMapTags.getValue();
 
                     if (map != null && map.size() > 0) {
+                        one:
                         for (UHfData.InventoryTagMap bean : list) {
                             if (bean != null && !map.containsKey(bean.strEPC)) {
                                 emitter.onNext(bean);
@@ -285,10 +318,15 @@ public class RfidFragment extends Fragment {
                                 if (mViewModel.mode.getValue() == 0) {
                                     isScan = false;
                                     mViewModel.isScan.postValue(false);
-                                    break;
+                                    break one;
                                 }
 
+                            } else {
+
+                                Objects.requireNonNull(getActivity()).runOnUiThread(() -> ToastUtils.info(Objects.requireNonNull(getContext()), "已扫描录入", Gravity.BOTTOM, Toast.LENGTH_SHORT).show());
+
                             }
+
                         }
 
                     } else {

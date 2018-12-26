@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rfid_navigation"
+    app:startDestination="@id/rfid_dest">
+
+    <fragment
+        android:id="@+id/rfid_dest"
+        android:name="org.oz.demo.ui.rfid.RfidFragment"
+        android:label="rfid"
+        tools:layout="@layout/rfid_fragment">
+        <action
+            android:id="@+id/action_rfidFragment_to_rfidEditableFragment"
+            app:destination="@id/rfid_editable_dest" />
+    </fragment>
+    <fragment
+        android:id="@+id/rfid_editable_dest"
+        android:name="org.oz.demo.ui.rfid.RfidEditableFragment"
+        android:label="rfid_editable"
+        tools:layout="@layout/fragment_rfid_editable" />
+</navigation>
