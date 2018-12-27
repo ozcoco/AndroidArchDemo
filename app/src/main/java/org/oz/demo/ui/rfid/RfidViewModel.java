@@ -17,7 +17,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RfidViewModel extends AndroidViewModel {
+public class RfidViewModel extends AndroidViewModel
+{
+
+    public final MutableLiveData<Boolean> isWrite6c = new MutableLiveData<>();
+
+    public final MutableLiveData<Integer> read6cTypePosition = new MutableLiveData<>();
+
+    //read6c mem
+    public final LiveData<Byte> read6cType = Transformations.map(read6cTypePosition, position ->
+    {
+        byte type = 0x00;
+
+        switch (position)
+        {
+            case 0: //0x00 – 保留区
+                break;
+            case 1:  //0x01 – EPC存储区
+                type = 0x01;
+                break;
+            case 2: //0x02 – TID存储区
+                type = 0x02;
+                break;
+            case 3: //0x03 –用户存储区
+                type = 0x03;
+                break;
+
+        }
+
+        return type;
+    });
+
 
     public final MutableLiveData<Integer> itemClickPosition = new MutableLiveData<>();
 
@@ -48,7 +78,8 @@ public class RfidViewModel extends AndroidViewModel {
 
     public final LiveData<String> epcData = Transformations.map(itemClickPosition, position -> Objects.requireNonNull(itemData.getValue()).get(position).strEPC);
 
-    public RfidViewModel(@NonNull Application application) {
+    public RfidViewModel(@NonNull Application application)
+    {
         super(application);
 
         power.setValue(10);

@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
@@ -29,13 +30,15 @@ import java.util.Objects;
  * @Time 2018/12/26 14:15
  * @Description todo
  */
-public class RfidEditableFragment extends Fragment {
+public class RfidEditableFragment extends Fragment
+{
 
     private FragmentRfidEditableBinding mBinding;
 
     private RfidViewModel mViewModel;
 
-    public static RfidEditableFragment newInstance() {
+    public static RfidEditableFragment newInstance()
+    {
 
         final RfidEditableFragment fragment = new RfidEditableFragment();
 
@@ -43,7 +46,8 @@ public class RfidEditableFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -51,8 +55,8 @@ public class RfidEditableFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_rfid_editable, container, false);
 
@@ -61,23 +65,43 @@ public class RfidEditableFragment extends Fragment {
 
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         initComponent();
 
         initToolbar();
+
+        initView();
+
+    }
+
+    private void initView()
+    {
+
+        mViewModel.read6cType.observe(this, type ->
+        {
+
+
+        });
+
+
     }
 
 
-    private void initComponent() {
+    private void initComponent()
+    {
 
         mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(RfidViewModel.class);
 
+        mBinding.setVm(mViewModel);
+
     }
 
 
-    private void initToolbar() {
+    private void initToolbar()
+    {
 
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
 
@@ -87,14 +111,5 @@ public class RfidEditableFragment extends Fragment {
 
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
 }

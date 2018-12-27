@@ -98,4 +98,12 @@
     </string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <array name="read6c_mem">
+        <item>保留区</item>
+        <item>EPC存储区</item>
+        <item>TID存储区</item>
+        <item>用户存储区</item>
+    </array>
+
 </resources>

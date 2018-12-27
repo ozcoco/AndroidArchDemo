@@ -22,9 +22,5 @@
         android:id="@+id/editable"
         android:name="org.oz.demo.ui.rfid.RfidEditableFragment"
         android:label="fragment_rfid_editable"
-        tools:layout="@layout/fragment_rfid_editable">
-        <action
-            android:id="@+id/action_editable_to_rfid"
-            app:destination="@id/rfid" />
-    </fragment>
+        tools:layout="@layout/fragment_rfid_editable"/>
 </navigation>
