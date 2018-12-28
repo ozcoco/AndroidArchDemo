@@ -126,7 +126,7 @@ public class RfidFragment extends Fragment {
         //important
         initComponent();
 
-        isConnected = connectUHF();
+        isConnected = mViewModel.connectUHF();
 
         initToolbar();
 
@@ -209,7 +209,7 @@ public class RfidFragment extends Fragment {
 
             } else {
 
-                isConnected = connectUHF();
+                isConnected = mViewModel.connectUHF();
 
                 UHfData.UHfGetData.SetRfPower(power.byteValue());
             }
@@ -338,7 +338,7 @@ public class RfidFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        disconnectUHF();
+        mViewModel.disconnectUHF();
     }
 
     /**
@@ -422,46 +422,12 @@ public class RfidFragment extends Fragment {
 
             Snackbar.make(mBinding.recycler, "连接RFID读写器失败！", Snackbar.LENGTH_SHORT).show();
 
-            isConnected = connectUHF();
+            isConnected = mViewModel.connectUHF();
 
             scanTags();
         }
 
 
     }
-
-
-    /**
-     * @Name connectUHF
-     * @Params []
-     * @Return boolean
-     * @Author oz
-     * @Email 857527916@qq.com
-     * @Time 2018/12/20 14:17
-     * @Description 通过串口，连接RFID读写器,  return ,true connected, unable connected
-     */
-    private boolean connectUHF() {
-
-        final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
-
-        return state == 0;
-    }
-
-
-    /**
-     * @Name disconnectUHF
-     * @Params []
-     * @Return boolean
-     * @Author oz
-     * @Email 857527916@qq.com
-     * @Time 2018/12/20 14:23
-     * @Description 断开RFID读写器， return, true 成功，false失败
-     */
-    private boolean disconnectUHF() {
-        UHfData.lsTagList.clear();
-        UHfData.dtIndexMap.clear();
-        return UHfData.UHfGetData.CloseUHf() == 0;
-    }
-
 
 }

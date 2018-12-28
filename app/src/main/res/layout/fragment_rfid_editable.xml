@@ -89,25 +89,21 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/marge_8dp"
                     app:counterEnabled="true"
-                    app:errorEnabled="true"
-                    app:errorTextAppearance="@style/TextAppearance.AppCompat.Body2"
-                    app:helperText="@{vm.isWrite6c?`输入要写入的EPC数据`:``}"
+                    app:helperText="@{vm.isWrite6c?`输入要写入的`+ vm.type + `的数据`:``}"
                     app:helperTextEnabled="true"
                     app:helperTextTextAppearance="@style/TextAppearance.AppCompat.Body2"
                     app:hintAnimationEnabled="true"
                     app:hintEnabled="true"
-                    app:hintTextAppearance="@style/TextAppearance.AppCompat.Body1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:passwordToggleEnabled="true">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="@{vm.isWrite6c}"
-                        android:hint="EPC"
-                        android:text="@{vm.epcData}" />
+                        android:enabled="@{vm.isWrite6c, default = false}"
+                        android:hint="@{vm.type, default = `数据`}"
+                        android:text="@={vm.epcData}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
