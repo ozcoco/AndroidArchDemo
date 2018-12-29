@@ -33,6 +33,10 @@ public class RfidViewModel extends AndroidViewModel {
     //read6c mem
     public final ObservableByte read6cType = new ObservableByte();
 
+
+    /*** 读写标签的内存区域 ***/
+    public final MutableLiveData<EPCNumberType> rwMem = new MutableLiveData<>();
+
     //read6c mem type
     public final ObservableField<String> type = new ObservableField<>();
 
@@ -65,6 +69,11 @@ public class RfidViewModel extends AndroidViewModel {
 
     public final ObservableField<String> epcData = new ObservableField<>();
 
+    /**
+     * 选择的Tag
+     ***/
+    public final LiveData<UHfData.InventoryTagMap> selectedTag = Transformations.map(itemClickPosition, position -> itemData.getValue().get(position));
+
     public RfidViewModel(@NonNull Application application) {
         super(application);
 
@@ -87,6 +96,25 @@ public class RfidViewModel extends AndroidViewModel {
                 final int position = read6cTypePosition.get();
 
                 byte typeIndex = (byte) position;
+
+                EPCNumberType epcNumberType = null;
+
+                switch (typeIndex) {
+                    case 0:
+                        epcNumberType = EPCNumberType.RESERVED;
+                        break;
+                    case 1:
+                        epcNumberType = EPCNumberType.EPC;
+                        break;
+                    case 2:
+                        epcNumberType = EPCNumberType.TID;
+                        break;
+                    case 3:
+                        epcNumberType = EPCNumberType.USER;
+                        break;
+                }
+
+                rwMem.setValue(epcNumberType);
 
                 String typeName = read6cTypes[position];
 
@@ -111,6 +139,8 @@ public class RfidViewModel extends AndroidViewModel {
     public boolean connectUHF() {
 
         final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
+
+        UHfData.UHfGetData.SetRfPower((byte) 30);
 
         isConnected.setValue(state == 0);
 

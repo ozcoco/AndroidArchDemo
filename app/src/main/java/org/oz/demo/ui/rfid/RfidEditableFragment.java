@@ -1,33 +1,32 @@
 package org.oz.demo.ui.rfid;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.Observable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.uhf.scanlable.UHfData;
 
 import org.oz.demo.R;
 import org.oz.demo.databinding.FragmentRfidEditableBinding;
+import org.oz.demo.utils.ToastUtils;
 
+import java.util.Locale;
 import java.util.Objects;
 
-import io.reactivex.ObservableEmitter;
+import cn.pda.serialport.Tools;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -91,30 +90,138 @@ public class RfidEditableFragment extends Fragment {
 
     private void initView() {
 
-        /*** 监听RFID读写区的类型 ***/
+        /*** 监听RFID读区存储区变化 ***/
         mViewModel.read6cType.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+
             @Override
             public void onPropertyChanged(Observable sender, int propertyId) {
 
-                final Disposable subscribe = io.reactivex.Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
-
-                    final byte type = mViewModel.read6cType.get();
-
-
-//                    UHfData.UHfGetData.Read6C();
-
-
-                    emitter.onNext(true);
-
-                }).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(msg -> {
-
-
-                }, throwable -> {
-
-
-                });
-
+                //读取指定TAG存储区数据
+                read();
             }
+        });
+
+        /*** 监听写入数据的变化 ***/
+        mViewModel.epcData.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+
+                //写入数据到指定TAG存储区
+                write();
+            }
+        });
+
+    }
+
+
+    /*** UHF读数据 ***/
+    public void read() {
+
+        Log.e("read ^_*", "read ----->>>--->>>>>>>>>");
+
+        final RfidViewModel vm = mViewModel;
+
+        final UHfData.InventoryTagMap tag = vm.selectedTag.getValue();
+
+        io.reactivex.Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
+
+            final byte eNum = (byte) (Objects.requireNonNull(tag).strEPC.length() / 4);
+
+            byte[] epc = UHfData.UHfGetData.hexStringToBytes(Objects.requireNonNull(tag).strEPC);
+
+            final EPCNumberType rwMem = vm.rwMem.getValue();
+
+            final byte type = Objects.requireNonNull(rwMem).getType();
+
+            final byte[] wordPtr = Objects.requireNonNull(rwMem).getWordPtr();
+
+            final byte len = Objects.requireNonNull(rwMem).getLen();
+
+            final byte[] password = EPCNumberType.passwd;
+
+            int rstCode = UHfData.UHfGetData.Read6C(eNum, epc, type, wordPtr, len, password);
+
+            if (rstCode == UHF_RESULT.SUCCESS)
+                emitter.onNext(true);
+            else
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> ToastUtils.error(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "读取失败！，ERR CODE: %d", rstCode), Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show());
+
+        }).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(msg -> {
+
+            Log.e("read ^_*", msg ? "读取数据成功" : "读取数据失败");
+
+            final byte[] hexData = UHfData.UHfGetData.getRead6Cdata();
+
+            if (hexData == null) return;
+
+            final String data = Tools.Bytes2HexString(hexData, hexData.length);
+
+            vm.epcData.set(data);
+
+        }, throwable -> {
+
+
+        });
+
+
+    }
+
+
+    /*** UHF写数据 ***/
+    public void write() {
+
+        Log.e("write ^_*", "write ----->>>--->>>>>>>>>");
+
+        final RfidViewModel vm = mViewModel;
+
+        if (!vm.isWrite6c.get()) return;
+
+        final UHfData.InventoryTagMap tag = vm.selectedTag.getValue();
+
+        io.reactivex.Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
+
+            final byte eNum = (byte) (Objects.requireNonNull(tag).strEPC.length() / 4);
+
+            byte[] epc = UHfData.UHfGetData.hexStringToBytes(Objects.requireNonNull(tag).strEPC);
+
+            final EPCNumberType rwMem = vm.rwMem.getValue();
+
+            final byte type = Objects.requireNonNull(rwMem).getType();
+
+            final byte[] wordPtr = Objects.requireNonNull(rwMem).getWordPtr();
+
+            final byte len = Objects.requireNonNull(rwMem).getLen();
+
+            final byte[] password = EPCNumberType.passwd;
+
+            final byte[] wData = UHfData.UHfGetData.hexStringToBytes(vm.epcData.get());
+
+            int rstCode = 0;
+
+            switch (rwMem) {
+                case EPC:
+                    rstCode = UHfData.UHfGetData.WriteEPC(eNum, password, epc, wData);
+                    break;
+                default:
+                    UHfData.UHfGetData.Write6c(len, eNum, epc, type, wordPtr, wData, password);
+                    break;
+            }
+
+            if (rstCode == UHF_RESULT.SUCCESS)
+                emitter.onNext(true);
+            else {
+                int finalRstCode = rstCode;
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> ToastUtils.error(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "写入失败！，ERR CODE: %d", finalRstCode), Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show());
+            }
+
+
+        }).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(msg -> {
+
+            Log.e("write ^_*", msg ? "写入数据成功" : "写入数据失败");
+
+        }, throwable -> {
+
+
         });
 
 
