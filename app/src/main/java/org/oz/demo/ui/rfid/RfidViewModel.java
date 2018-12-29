@@ -2,6 +2,7 @@ package org.oz.demo.ui.rfid;
 
 import android.app.Application;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.Observable;
@@ -22,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RfidViewModel extends AndroidViewModel {
+public class RfidViewModel extends AndroidViewModel
+{
 
     public final MutableLiveData<Boolean> isConnected = new MutableLiveData<>();
 
@@ -32,7 +34,6 @@ public class RfidViewModel extends AndroidViewModel {
 
     //read6c mem
     public final ObservableByte read6cType = new ObservableByte();
-
 
     /*** 读写标签的内存区域 ***/
     public final MutableLiveData<EPCNumberType> rwMem = new MutableLiveData<>();
@@ -72,26 +73,38 @@ public class RfidViewModel extends AndroidViewModel {
     /**
      * 选择的Tag
      ***/
-    public final LiveData<UHfData.InventoryTagMap> selectedTag = Transformations.map(itemClickPosition, position -> itemData.getValue().get(position));
+    public final MutableLiveData<UHfData.InventoryTagMap> selectedTag = new MutableLiveData<>();
 
-    public RfidViewModel(@NonNull Application application) {
+    public RfidViewModel(@NonNull Application application)
+    {
         super(application);
 
-        power.setValue(10);
+        power.setValue(30);
 
         mode.setValue(0);
 
         isScan.setValue(false);
 
-        itemClickPosition.observeForever(position -> epcData.set(itemData.getValue().get(position).strEPC));
+        itemClickPosition.observeForever(position ->
+        {
+            final UHfData.InventoryTagMap bean = Objects.requireNonNull(itemData.getValue()).get(position);
+
+            Log.e("select ^_*", bean != null ? bean.strEPC : "Tag数据为空");
+
+            selectedTag.setValue(bean);
+
+            epcData.set(bean.strEPC);
+        });
 
         final String[] read6cTypes = application.getResources().getStringArray(R.array.read6c_mem);
 
         type.set(read6cTypes[0]);
 
-        read6cTypePosition.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        read6cTypePosition.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
+        {
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
+            public void onPropertyChanged(Observable sender, int propertyId)
+            {
 
                 final int position = read6cTypePosition.get();
 
@@ -99,7 +112,8 @@ public class RfidViewModel extends AndroidViewModel {
 
                 EPCNumberType epcNumberType = null;
 
-                switch (typeIndex) {
+                switch (typeIndex)
+                {
                     case 0:
                         epcNumberType = EPCNumberType.RESERVED;
                         break;
@@ -136,11 +150,10 @@ public class RfidViewModel extends AndroidViewModel {
      * @Time 2018/12/20 14:17
      * @Description 通过串口，连接RFID读写器,  return ,true connected, unable connected
      */
-    public boolean connectUHF() {
+    public boolean connectUHF()
+    {
 
         final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
-
-        UHfData.UHfGetData.SetRfPower((byte) 30);
 
         isConnected.setValue(state == 0);
 
@@ -157,7 +170,8 @@ public class RfidViewModel extends AndroidViewModel {
      * @Time 2018/12/20 14:23
      * @Description 断开RFID读写器， return, true 成功，false失败
      */
-    public boolean disconnectUHF() {
+    public boolean disconnectUHF()
+    {
         UHfData.lsTagList.clear();
         UHfData.dtIndexMap.clear();
         return UHfData.UHfGetData.CloseUHf() == 0;

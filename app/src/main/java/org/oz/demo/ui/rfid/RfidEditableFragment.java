@@ -1,6 +1,7 @@
 package org.oz.demo.ui.rfid;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import java.util.Objects;
 
 import cn.pda.serialport.Tools;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -37,13 +39,15 @@ import io.reactivex.schedulers.Schedulers;
  * @Time 2018/12/26 14:15
  * @Description todo
  */
-public class RfidEditableFragment extends Fragment {
+public class RfidEditableFragment extends Fragment
+{
 
     private FragmentRfidEditableBinding mBinding;
 
     private RfidViewModel mViewModel;
 
-    public static RfidEditableFragment newInstance() {
+    public static RfidEditableFragment newInstance()
+    {
 
         final RfidEditableFragment fragment = new RfidEditableFragment();
 
@@ -51,7 +55,8 @@ public class RfidEditableFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -59,7 +64,8 @@ public class RfidEditableFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_rfid_editable, container, false);
 
@@ -68,14 +74,16 @@ public class RfidEditableFragment extends Fragment {
 
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
 
         mViewModel.disconnectUHF();
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         initComponent();
@@ -88,13 +96,16 @@ public class RfidEditableFragment extends Fragment {
 
     }
 
-    private void initView() {
+    private void initView()
+    {
 
         /*** 监听RFID读区存储区变化 ***/
-        mViewModel.read6cType.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        mViewModel.read6cType.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
+        {
 
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
+            public void onPropertyChanged(Observable sender, int propertyId)
+            {
 
                 //读取指定TAG存储区数据
                 read();
@@ -102,9 +113,11 @@ public class RfidEditableFragment extends Fragment {
         });
 
         /*** 监听写入数据的变化 ***/
-        mViewModel.epcData.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+        mViewModel.epcData.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
+        {
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId) {
+            public void onPropertyChanged(Observable sender, int propertyId)
+            {
 
                 //写入数据到指定TAG存储区
                 write();
@@ -115,15 +128,21 @@ public class RfidEditableFragment extends Fragment {
 
 
     /*** UHF读数据 ***/
-    public void read() {
+    public void read()
+    {
 
         Log.e("read ^_*", "read ----->>>--->>>>>>>>>");
 
+        ToastUtils.info(getContext(), "read ----->>>--->>>>>>>>>", Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
+
         final RfidViewModel vm = mViewModel;
 
-        final UHfData.InventoryTagMap tag = vm.selectedTag.getValue();
+        io.reactivex.Observable.create((ObservableOnSubscribe<Integer>) emitter ->
+        {
 
-        io.reactivex.Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
+            Log.e("read ^_*", "reading ----->>>--->>>>>>>>>");
+
+            final UHfData.InventoryTagMap tag = vm.selectedTag.getValue();
 
             final byte eNum = (byte) (Objects.requireNonNull(tag).strEPC.length() / 4);
 
@@ -141,25 +160,31 @@ public class RfidEditableFragment extends Fragment {
 
             int rstCode = UHfData.UHfGetData.Read6C(eNum, epc, type, wordPtr, len, password);
 
-            if (rstCode == UHF_RESULT.SUCCESS)
-                emitter.onNext(true);
+            Log.e("read ^_*", "readed ----->>>--->>>>>>>>>");
+
+            emitter.onNext(rstCode);
+
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(code ->
+        {
+
+            Log.e("read ^_*", code.byteValue() == UHF_RESULT.SUCCESS ? "读取数据成功" : ("读取数据失败 code:" + code));
+
+
+            if (code == UHF_RESULT.SUCCESS)
+                ToastUtils.success(Objects.requireNonNull(getContext()), "读取数据成功", Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
             else
-                Objects.requireNonNull(getActivity()).runOnUiThread(() -> ToastUtils.error(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "读取失败！，ERR CODE: %d", rstCode), Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show());
-
-        }).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(msg -> {
-
-            Log.e("read ^_*", msg ? "读取数据成功" : "读取数据失败");
+                ToastUtils.error(Objects.requireNonNull(getContext()), "读取数据失败 code:" + code, Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show();
 
             final byte[] hexData = UHfData.UHfGetData.getRead6Cdata();
 
-            if (hexData == null) return;
+            Log.e("read ^_*", "data : ----->>" + new String(hexData));
+
+            if (hexData == null)
+                return;
 
             final String data = Tools.Bytes2HexString(hexData, hexData.length);
 
             vm.epcData.set(data);
-
-        }, throwable -> {
-
 
         });
 
@@ -168,17 +193,24 @@ public class RfidEditableFragment extends Fragment {
 
 
     /*** UHF写数据 ***/
-    public void write() {
-
-        Log.e("write ^_*", "write ----->>>--->>>>>>>>>");
+    public void write()
+    {
 
         final RfidViewModel vm = mViewModel;
 
-        if (!vm.isWrite6c.get()) return;
+        if (!vm.isWrite6c.get() || TextUtils.isEmpty(vm.epcData.get()))
+            return;
 
-        final UHfData.InventoryTagMap tag = vm.selectedTag.getValue();
+        Log.e("write ^_*", "write ----->>>--->>>>>>>>>");
 
-        io.reactivex.Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
+        ToastUtils.info(getContext(), "write ----->>>--->>>>>>>>>", Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
+
+        io.reactivex.Observable.create((ObservableOnSubscribe<Integer>) emitter ->
+        {
+
+            Log.e("write ^_*", "writing ----->>>--->>>>>>>>>");
+
+            final UHfData.InventoryTagMap tag = vm.selectedTag.getValue();
 
             final byte eNum = (byte) (Objects.requireNonNull(tag).strEPC.length() / 4);
 
@@ -198,7 +230,8 @@ public class RfidEditableFragment extends Fragment {
 
             int rstCode = 0;
 
-            switch (rwMem) {
+            switch (rwMem)
+            {
                 case EPC:
                     rstCode = UHfData.UHfGetData.WriteEPC(eNum, password, epc, wData);
                     break;
@@ -207,20 +240,17 @@ public class RfidEditableFragment extends Fragment {
                     break;
             }
 
-            if (rstCode == UHF_RESULT.SUCCESS)
-                emitter.onNext(true);
-            else {
-                int finalRstCode = rstCode;
-                Objects.requireNonNull(getActivity()).runOnUiThread(() -> ToastUtils.error(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "写入失败！，ERR CODE: %d", finalRstCode), Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show());
-            }
+            emitter.onNext(rstCode);
 
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(code ->
+        {
 
-        }).observeOn(Schedulers.io()).subscribeOn(Schedulers.io()).subscribe(msg -> {
+            Log.e("write ^_*", code == UHF_RESULT.SUCCESS ? "写入数据成功" : ("写入数据失败 code:" + code));
 
-            Log.e("write ^_*", msg ? "写入数据成功" : "写入数据失败");
-
-        }, throwable -> {
-
+            if (code == UHF_RESULT.SUCCESS)
+                ToastUtils.success(Objects.requireNonNull(getContext()), "写入数据成功", Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
+            else
+                ToastUtils.error(Objects.requireNonNull(getContext()), "写入数据失败 code:" + code, Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show();
 
         });
 
@@ -228,7 +258,8 @@ public class RfidEditableFragment extends Fragment {
     }
 
 
-    private void initComponent() {
+    private void initComponent()
+    {
 
         mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(RfidViewModel.class);
 
@@ -237,7 +268,8 @@ public class RfidEditableFragment extends Fragment {
     }
 
 
-    private void initToolbar() {
+    private void initToolbar()
+    {
 
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
 
