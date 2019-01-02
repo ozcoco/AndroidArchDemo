@@ -23,8 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RfidViewModel extends AndroidViewModel
-{
+public class RfidViewModel extends AndroidViewModel {
+
+    /**
+     * word length
+     **/
+    public final ObservableInt wordLen = new ObservableInt();
+
+    /**
+     * word max length
+     */
+    public final ObservableInt wordMax = new ObservableInt();
 
     public final MutableLiveData<Boolean> isConnected = new MutableLiveData<>();
 
@@ -75,12 +84,19 @@ public class RfidViewModel extends AndroidViewModel
      ***/
     public final MutableLiveData<UHfData.InventoryTagMap> selectedTag = new MutableLiveData<>();
 
-    public RfidViewModel(@NonNull Application application)
-    {
+    public RfidViewModel(@NonNull Application application) {
         super(application);
 
+        //init max word length
+        wordMax.set(4);
+
+        //init word length value 4
+        wordLen.set(4);
+
+        //init power value 30
         power.setValue(30);
 
+        //init em type
         mode.setValue(0);
 
         isScan.setValue(false);
@@ -100,11 +116,9 @@ public class RfidViewModel extends AndroidViewModel
 
         type.set(read6cTypes[0]);
 
-        read6cTypePosition.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
-        {
+        read6cTypePosition.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId)
-            {
+            public void onPropertyChanged(Observable sender, int propertyId) {
 
                 final int position = read6cTypePosition.get();
 
@@ -112,8 +126,7 @@ public class RfidViewModel extends AndroidViewModel
 
                 EPCNumberType epcNumberType = null;
 
-                switch (typeIndex)
-                {
+                switch (typeIndex) {
                     case 0:
                         epcNumberType = EPCNumberType.RESERVED;
                         break;
@@ -129,6 +142,8 @@ public class RfidViewModel extends AndroidViewModel
                 }
 
                 rwMem.setValue(epcNumberType);
+
+                wordMax.set((int) Objects.requireNonNull(epcNumberType).getLen());
 
                 String typeName = read6cTypes[position];
 
@@ -150,8 +165,7 @@ public class RfidViewModel extends AndroidViewModel
      * @Time 2018/12/20 14:17
      * @Description 通过串口，连接RFID读写器,  return ,true connected, unable connected
      */
-    public boolean connectUHF()
-    {
+    public boolean connectUHF() {
 
         final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
 
@@ -170,8 +184,7 @@ public class RfidViewModel extends AndroidViewModel
      * @Time 2018/12/20 14:23
      * @Description 断开RFID读写器， return, true 成功，false失败
      */
-    public boolean disconnectUHF()
-    {
+    public boolean disconnectUHF() {
         UHfData.lsTagList.clear();
         UHfData.dtIndexMap.clear();
         return UHfData.UHfGetData.CloseUHf() == 0;

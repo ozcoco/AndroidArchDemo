@@ -39,15 +39,25 @@ import io.reactivex.schedulers.Schedulers;
  * @Time 2018/12/26 14:15
  * @Description todo
  */
-public class RfidEditableFragment extends Fragment
-{
+public class RfidEditableFragment extends Fragment {
+
 
     private FragmentRfidEditableBinding mBinding;
 
     private RfidViewModel mViewModel;
 
-    public static RfidEditableFragment newInstance()
-    {
+    private final Handles handles = new Handles();
+
+    public class Handles {
+
+        public void onWrite(View v) {
+            write();
+        }
+
+    }
+
+
+    public static RfidEditableFragment newInstance() {
 
         final RfidEditableFragment fragment = new RfidEditableFragment();
 
@@ -55,8 +65,7 @@ public class RfidEditableFragment extends Fragment
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -64,8 +73,7 @@ public class RfidEditableFragment extends Fragment
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_rfid_editable, container, false);
 
@@ -74,16 +82,14 @@ public class RfidEditableFragment extends Fragment
 
 
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
 
         mViewModel.disconnectUHF();
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState)
-    {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         initComponent();
@@ -96,16 +102,13 @@ public class RfidEditableFragment extends Fragment
 
     }
 
-    private void initView()
-    {
+    private void initView() {
 
         /*** 监听RFID读区存储区变化 ***/
-        mViewModel.read6cType.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
-        {
+        mViewModel.read6cType.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
 
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId)
-            {
+            public void onPropertyChanged(Observable sender, int propertyId) {
 
                 //读取指定TAG存储区数据
                 read();
@@ -113,23 +116,21 @@ public class RfidEditableFragment extends Fragment
         });
 
         /*** 监听写入数据的变化 ***/
-        mViewModel.epcData.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback()
-        {
+       /* mViewModel.epcData.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
-            public void onPropertyChanged(Observable sender, int propertyId)
-            {
+            public void onPropertyChanged(Observable sender, int propertyId) {
 
                 //写入数据到指定TAG存储区
                 write();
             }
-        });
+        })*/
+        ;
 
     }
 
 
     /*** UHF读数据 ***/
-    public void read()
-    {
+    public void read() {
 
         Log.e("read ^_*", "read ----->>>--->>>>>>>>>");
 
@@ -154,7 +155,9 @@ public class RfidEditableFragment extends Fragment
 
             final byte[] wordPtr = Objects.requireNonNull(rwMem).getWordPtr();
 
-            final byte len = Objects.requireNonNull(rwMem).getLen();
+//            final byte len = Objects.requireNonNull(rwMem).getLen();
+
+            final byte len = Integer.valueOf(vm.wordLen.get()).byteValue();
 
             final byte[] password = EPCNumberType.passwd;
 
@@ -182,7 +185,11 @@ public class RfidEditableFragment extends Fragment
             if (hexData == null)
                 return;
 
-            final String data = Tools.Bytes2HexString(hexData, hexData.length);
+            final EPCNumberType rwMem = vm.rwMem.getValue();
+
+            final String data = UHfData.UHfGetData
+                    .bytesToHexString(hexData, 0, rwMem.getLen() * 2)
+                    .toUpperCase();
 
             vm.epcData.set(data);
 
@@ -193,8 +200,7 @@ public class RfidEditableFragment extends Fragment
 
 
     /*** UHF写数据 ***/
-    public void write()
-    {
+    public void write() {
 
         final RfidViewModel vm = mViewModel;
 
@@ -222,7 +228,9 @@ public class RfidEditableFragment extends Fragment
 
             final byte[] wordPtr = Objects.requireNonNull(rwMem).getWordPtr();
 
-            final byte len = Objects.requireNonNull(rwMem).getLen();
+//            final byte len = Objects.requireNonNull(rwMem).getLen();
+
+            final byte len = Integer.valueOf(vm.wordLen.get()).byteValue();
 
             final byte[] password = EPCNumberType.passwd;
 
@@ -230,8 +238,7 @@ public class RfidEditableFragment extends Fragment
 
             int rstCode = 0;
 
-            switch (rwMem)
-            {
+            switch (rwMem) {
                 case EPC:
                     rstCode = UHfData.UHfGetData.WriteEPC(eNum, password, epc, wData);
                     break;
@@ -258,18 +265,18 @@ public class RfidEditableFragment extends Fragment
     }
 
 
-    private void initComponent()
-    {
+    private void initComponent() {
 
         mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(RfidViewModel.class);
+
+        mBinding.setHandles(handles);
 
         mBinding.setVm(mViewModel);
 
     }
 
 
-    private void initToolbar()
-    {
+    private void initToolbar() {
 
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
 

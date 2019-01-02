@@ -9,6 +9,10 @@
             name="vm"
             type="org.oz.demo.ui.rfid.RfidViewModel" />
 
+        <variable
+            name="handles"
+            type="org.oz.demo.ui.rfid.RfidEditableFragment.Handles" />
+
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -42,25 +46,6 @@
                     app:layout_collapseMode="parallax"
                     app:srcCompat="@drawable/material_design_3" />
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|bottom"
-                    android:layout_margin="@dimen/fab_margin"
-                    android:entries="@array/read6c_mem"
-                    android:selectedItemPosition="@={vm.read6cTypePosition}"
-                    app:layout_collapseMode="parallax" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    style="@style/Widget.MaterialComponents.CompoundButton.Switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:checked="@={vm.isWrite6c}"
-                    android:text="@{vm.isWrite6c ? `写`:`读`, default = `读`}"
-                    android:textColor="@color/colorPrimaryDark"
-                    app:useMaterialThemeColors="true" />
-
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
@@ -83,8 +68,55 @@
                 android:layout_height="match_parent"
                 tools:context=".ui.rfid.RfidEditableFragment">
 
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spr_em_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|bottom"
+                    android:layout_margin="@dimen/fab_margin"
+                    android:entries="@array/read6c_mem"
+                    android:selectedItemPosition="@={vm.read6cTypePosition}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/sc_rw"
+                    style="@style/Widget.MaterialComponents.CompoundButton.Switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:checked="@={vm.isWrite6c}"
+                    android:text="@{vm.isWrite6c ? `写`:`读`, default = `读`}"
+                    android:textColor="@color/colorPrimaryDark"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:useMaterialThemeColors="true" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tx_word_len"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/marge_8dp"
+                    android:text="@{`读写的字长` + vm.wordLen, default = `读写的字长`}"
+                    app:layout_constraintStart_toStartOf="@id/spr_em_type"
+                    app:layout_constraintTop_toBottomOf="@id/spr_em_type" />
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/skr_rw_len"
+                    style="@style/Widget.AppCompat.SeekBar.Discrete"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/marge_8dp"
+                    android:max="32"
+                    android:progress="@={vm.wordLen,default = 4}"
+                    app:layout_constraintEnd_toEndOf="@id/sc_rw"
+                    app:layout_constraintStart_toStartOf="@id/spr_em_type"
+                    app:layout_constraintTop_toBottomOf="@id/tx_word_len" />
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/edt_data"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/marge_8dp"
@@ -96,7 +128,7 @@
                     app:hintEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/skr_rw_len">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -106,6 +138,18 @@
                         android:text="@={vm.epcData}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_writer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="@{vm.isWrite6c}"
+                    android:onClick="@{handles::onWrite, default = false}"
+                    android:text="写入"
+                    app:layout_constraintStart_toStartOf="@id/edt_data"
+                    app:layout_constraintTop_toBottomOf="@id/edt_data" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
