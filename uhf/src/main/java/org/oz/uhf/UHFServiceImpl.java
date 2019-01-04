@@ -2,9 +2,13 @@ package org.oz.uhf;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.uhf.scanlable.UHfData;
+
+import org.oz.uhf.base.DataCallback;
+import org.oz.uhf.emtity.Tag;
 
 public class UHFServiceImpl implements IUHFService {
 
@@ -66,7 +70,7 @@ public class UHFServiceImpl implements IUHFService {
      * @Description todo
      */
     @Override
-    public boolean singleScan() {
+    public boolean singleScan(@NonNull SCAN_TYPE scanType, @NonNull DataCallback<Tag> callback) {
 
         //清除累计的数据
         UHfData.lsTagList.clear();
@@ -91,7 +95,16 @@ public class UHFServiceImpl implements IUHFService {
      * @Description todo
      */
     @Override
-    public boolean multiScan() {
+    public boolean multiScan(@NonNull SCAN_TYPE scanType, @NonNull DataCallback<Tag> callback) {
+
+
+        return false;
+    }
+
+
+    @Override
+    public boolean autoScan(@NonNull SCAN_TYPE scanType, @NonNull SESSION_MODE sessionMode, @NonNull DataCallback<Tag> callback) {
+
 
 
         return false;
