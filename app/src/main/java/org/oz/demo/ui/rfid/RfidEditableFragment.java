@@ -23,10 +23,8 @@ import org.oz.demo.R;
 import org.oz.demo.databinding.FragmentRfidEditableBinding;
 import org.oz.demo.utils.ToastUtils;
 
-import java.util.Locale;
 import java.util.Objects;
 
-import cn.pda.serialport.Tools;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -170,10 +168,10 @@ public class RfidEditableFragment extends Fragment {
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(code ->
         {
 
-            Log.e("read ^_*", code.byteValue() == UHF_RESULT.SUCCESS ? "读取数据成功" : ("读取数据失败 code:" + code));
+            Log.e("read ^_*", code.byteValue() == RESULT.SUCCESS ? "读取数据成功" : ("读取数据失败 code:" + code));
 
 
-            if (code == UHF_RESULT.SUCCESS)
+            if (code == RESULT.SUCCESS)
                 ToastUtils.success(Objects.requireNonNull(getContext()), "读取数据成功", Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
             else
                 ToastUtils.error(Objects.requireNonNull(getContext()), "读取数据失败 code:" + code, Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show();
@@ -252,9 +250,9 @@ public class RfidEditableFragment extends Fragment {
         }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(code ->
         {
 
-            Log.e("write ^_*", code == UHF_RESULT.SUCCESS ? "写入数据成功" : ("写入数据失败 code:" + code));
+            Log.e("write ^_*", code == RESULT.SUCCESS ? "写入数据成功" : ("写入数据失败 code:" + code));
 
-            if (code == UHF_RESULT.SUCCESS)
+            if (code == RESULT.SUCCESS)
                 ToastUtils.success(Objects.requireNonNull(getContext()), "写入数据成功", Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
             else
                 ToastUtils.error(Objects.requireNonNull(getContext()), "写入数据失败 code:" + code, Gravity.CENTER_VERTICAL, Toast.LENGTH_SHORT).show();

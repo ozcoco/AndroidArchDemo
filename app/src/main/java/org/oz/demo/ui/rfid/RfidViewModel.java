@@ -190,5 +190,4 @@ public class RfidViewModel extends AndroidViewModel {
         return UHfData.UHfGetData.CloseUHf() == 0;
     }
 
-
 }

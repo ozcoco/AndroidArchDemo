@@ -11,10 +11,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import org.oz.demo.BR;
+import org.oz.demo.base.BaseBean;
 
 @Entity
-public class User extends Message implements Parcelable, Observable
-{
+public class User extends BaseBean implements Parcelable, Observable {
 
     @PrimaryKey
     private int userId;
@@ -29,12 +29,10 @@ public class User extends Message implements Parcelable, Observable
 
     private transient PropertyChangeRegistry propertyChangeRegistry = new PropertyChangeRegistry();
 
-    public User()
-    {
+    public User() {
     }
 
-    protected User(Parcel in)
-    {
+    protected User(Parcel in) {
         userId = in.readInt();
         name = in.readString();
         age = in.readInt();
@@ -42,30 +40,25 @@ public class User extends Message implements Parcelable, Observable
         address = in.readString();
     }
 
-    public static final Creator<User> CREATOR = new Creator<User>()
-    {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
-        public User createFromParcel(Parcel in)
-        {
+        public User createFromParcel(Parcel in) {
             return new User(in);
         }
 
         @Override
-        public User[] newArray(int size)
-        {
+        public User[] newArray(int size) {
             return new User[size];
         }
     };
 
     @Override
-    public int describeContents()
-    {
+    public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags)
-    {
+    public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(userId);
         dest.writeString(name);
         dest.writeInt(age);
@@ -74,25 +67,21 @@ public class User extends Message implements Parcelable, Observable
     }
 
     @Bindable
-    public int getUserId()
-    {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId)
-    {
+    public void setUserId(int userId) {
         this.userId = userId;
         notifyChange(BR.userId);
     }
 
     @Bindable
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         if (TextUtils.equals(this.name, name))
             return;
 
@@ -101,55 +90,45 @@ public class User extends Message implements Parcelable, Observable
     }
 
     @Bindable
-    public int getAge()
-    {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(int age)
-    {
+    public void setAge(int age) {
         this.age = age;
         notifyChange(BR.age);
     }
 
     @Bindable
-    public int getGender()
-    {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(int gender)
-    {
+    public void setGender(int gender) {
         this.gender = gender;
         notifyChange(BR.gender);
     }
 
     @Bindable
-    public String getAddress()
-    {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address)
-    {
+    public void setAddress(String address) {
         this.address = address;
         notifyChange(BR.address);
     }
 
-    private synchronized void notifyChange(int propertyId)
-    {
-        if (propertyChangeRegistry == null)
-        {
+    private synchronized void notifyChange(int propertyId) {
+        if (propertyChangeRegistry == null) {
             propertyChangeRegistry = new PropertyChangeRegistry();
         }
         propertyChangeRegistry.notifyChange(this, propertyId);
     }
 
     @Override
-    public synchronized void addOnPropertyChangedCallback(OnPropertyChangedCallback callback)
-    {
-        if (propertyChangeRegistry == null)
-        {
+    public synchronized void addOnPropertyChangedCallback(OnPropertyChangedCallback callback) {
+        if (propertyChangeRegistry == null) {
             propertyChangeRegistry = new PropertyChangeRegistry();
         }
         propertyChangeRegistry.add(callback);
@@ -157,18 +136,15 @@ public class User extends Message implements Parcelable, Observable
     }
 
     @Override
-    public synchronized void removeOnPropertyChangedCallback(OnPropertyChangedCallback callback)
-    {
-        if (propertyChangeRegistry != null)
-        {
+    public synchronized void removeOnPropertyChangedCallback(OnPropertyChangedCallback callback) {
+        if (propertyChangeRegistry != null) {
             propertyChangeRegistry.remove(callback);
         }
     }
 
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "User{" + "userId=" + userId + ", name='" + name + '\'' + ", age=" + age + ", gender=" + gender + ", address='" + address + '\'' + '}';
     }
 }

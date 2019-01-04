@@ -1,14 +1,14 @@
 package org.oz.demo.ui.rfid;
 
 /**
- * @Name UHF_RESULT
+ * @Name RESULT
  * @package org.oz.demo.ui.rfid
  * @Author oz
  * @Email 857527916@qq.com
  * @Time 2018/12/28 19:56
  * @Description UHF return result
  */
-public final class UHF_RESULT {
+public final class RESULT {
 
     public final static int SUCCESS = 0x00; //执行成功。
     public final static int ERR_NO_TAG = 0x01; //未询查到电子标签
