@@ -98,6 +98,7 @@
     </string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="dagger2">Dagger2</string>
 
     <array name="read6c_mem">
         <item>EPC存储区</item>

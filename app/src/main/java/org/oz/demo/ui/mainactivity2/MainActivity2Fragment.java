@@ -21,6 +21,7 @@ import org.oz.demo.BR;
 import org.oz.demo.MainActivity;
 import org.oz.demo.R;
 import org.oz.demo.databinding.MainActivity2FragmentBinding;
+import org.oz.demo.ui.Dagger2Activity;
 import org.oz.demo.ui.PagingActivity;
 import org.oz.demo.ui.RFIDActivity;
 
@@ -57,6 +58,13 @@ public class MainActivity2Fragment extends Fragment {
             startActivity(new Intent(getContext(), RFIDActivity.class));
 
         }
+
+        public void onDagger2(View v) {
+
+            startActivity(new Intent(getContext(), Dagger2Activity.class));
+
+        }
+
 
     }
 
