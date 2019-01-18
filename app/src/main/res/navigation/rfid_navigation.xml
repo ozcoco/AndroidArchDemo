@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rfid_navigation"
-    app:startDestination="@id/rfid_dest">
+    app:startDestination="@id/rfid">
 
     <fragment
-        android:id="@+id/rfid_dest"
+        android:id="@+id/rfid"
         android:name="org.oz.demo.ui.rfid.RfidFragment"
-        android:label="rfid"
+        android:label="rfid_fragment"
         tools:layout="@layout/rfid_fragment">
         <action
-            android:id="@+id/action_rfidFragment_to_rfidEditableFragment"
-            app:destination="@id/rfid_editable_dest" />
+            android:id="@+id/action_rfid_to_editable"
+            app:destination="@id/editable"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
-        android:id="@+id/rfid_editable_dest"
+        android:id="@+id/editable"
         android:name="org.oz.demo.ui.rfid.RfidEditableFragment"
-        android:label="rfid_editable"
-        tools:layout="@layout/fragment_rfid_editable" />
+        android:label="fragment_rfid_editable"
+        tools:layout="@layout/fragment_rfid_editable"/>
 </navigation>

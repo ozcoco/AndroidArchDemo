@@ -10,10 +10,11 @@ import org.oz.demo.po.DateViewModel;
 import org.oz.demo.po.User;
 import org.oz.demo.webservice.WebService;
 
+import java.util.List;
+
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity2ViewModel extends ViewModel
-{
+public class MainActivity2ViewModel extends ViewModel {
 
     public final ObservableField<String> msg = new ObservableField<>();
 
@@ -21,16 +22,15 @@ public class MainActivity2ViewModel extends ViewModel
 
     public final DateViewModel dateViewModel = new DateViewModel();
 
+    public final MutableLiveData<List<User>> users = new MutableLiveData<>();
 
     public final User user = new User();
 
     public MutableLiveData<User> userData;
 
-    public MutableLiveData<User> getUserData()
-    {
+    public MutableLiveData<User> getUserData() {
 
-        if (userData == null)
-        {
+        if (userData == null) {
             userData = new MutableLiveData<>();
             getUser();
         }
@@ -46,8 +46,7 @@ public class MainActivity2ViewModel extends ViewModel
 
 
     @SuppressLint("CheckResult")
-    public void getUser()
-    {
+    public void getUser() {
 
         webService.getUserService().user(2436).observeOn(Schedulers.io()).subscribeOn(Schedulers.computation()).subscribe(data ->
         {
@@ -55,6 +54,16 @@ public class MainActivity2ViewModel extends ViewModel
             userData.postValue(data);
 
             user.setName(data.getName());
+
+        }, throwable ->
+        {
+
+
+        });
+
+        webService.getUserService().users2(1).observeOn(Schedulers.io()).subscribeOn(Schedulers.computation()).subscribe(msg ->
+        {
+            users.postValue(msg.getData());
 
         }, throwable ->
         {

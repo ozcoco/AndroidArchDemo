@@ -7,12 +7,17 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
+<<<<<<< HEAD
 <<<<<<< .merge_file_a12068
         classpath 'com.android.tools.build:gradle:3.4.0-alpha09'
 =======
         classpath 'com.android.tools.build:gradle:3.4.0-alpha08'
 >>>>>>> .merge_file_a00696
+=======
+        classpath 'com.android.tools.build:gradle:3.4.0-alpha10'
+>>>>>>> 1ce99c20516e999a80ea45d3ae8d5bb541a54f97
         classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0-alpha09"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

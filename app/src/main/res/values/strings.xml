@@ -99,6 +99,7 @@
     </string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
+<<<<<<< HEAD
 =======
 
     <string name="new_message_notification_title_template">New message: %1$s</string>
@@ -117,4 +118,15 @@
     <string name="action_reply">Reply</string>
     <string name="notification">notification</string>
 >>>>>>> .merge_file_a02964
+=======
+    <string name="dagger2">Dagger2</string>
+
+    <array name="read6c_mem">
+        <item>EPC存储区</item>
+        <item>TID存储区</item>
+        <item>用户存储区</item>
+        <item>保留区</item>
+    </array>
+
+>>>>>>> 1ce99c20516e999a80ea45d3ae8d5bb541a54f97
 </resources>

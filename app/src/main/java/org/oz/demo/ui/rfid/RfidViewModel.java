@@ -1,33 +1,54 @@
 package org.oz.demo.ui.rfid;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.ArrayMap;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.DataBindingUtil;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableByte;
+import androidx.databinding.ObservableField;
 import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.uhf.scanlable.UHfData;
 
 import org.oz.demo.R;
-import org.oz.demo.base.view.DecorativeAdapter;
-import org.oz.demo.databinding.ItemRfidBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RfidViewModel extends AndroidViewModel {
+
+    /**
+     * word length
+     **/
+    public final ObservableInt wordLen = new ObservableInt();
+
+    /**
+     * word max length
+     */
+    public final ObservableInt wordMax = new ObservableInt();
+
+    public final MutableLiveData<Boolean> isConnected = new MutableLiveData<>();
+
+    public final ObservableBoolean isWrite6c = new ObservableBoolean();
+
+    public final ObservableInt read6cTypePosition = new ObservableInt();
+
+    //read6c mem
+    public final ObservableByte read6cType = new ObservableByte();
+
+    /*** 读写标签的内存区域 ***/
+    public final MutableLiveData<EPCNumberType> rwMem = new MutableLiveData<>();
+
+    //read6c mem type
+    public final ObservableField<String> type = new ObservableField<>();
 
     public final MutableLiveData<Integer> itemClickPosition = new MutableLiveData<>();
 
@@ -56,57 +77,117 @@ public class RfidViewModel extends AndroidViewModel {
 
     public final LiveData<String> info = Transformations.map(inventoryTagMap, Object::toString);
 
+    public final ObservableField<String> epcData = new ObservableField<>();
+
+    /**
+     * 选择的Tag
+     ***/
+    public final MutableLiveData<UHfData.InventoryTagMap> selectedTag = new MutableLiveData<>();
 
     public RfidViewModel(@NonNull Application application) {
         super(application);
 
-        power.setValue(10);
+        //init max word length
+        wordMax.set(4);
 
+        //init word length value 4
+        wordLen.set(4);
+
+        //init power value 30
+        power.setValue(30);
+
+        //init em type
         mode.setValue(0);
 
         isScan.setValue(false);
-    }
 
+        itemClickPosition.observeForever(position ->
+        {
+            final UHfData.InventoryTagMap bean = Objects.requireNonNull(itemData.getValue()).get(position);
 
-    @BindingAdapter({"adapter", "itemClickPosition"})
-    public static void recycleAdapter(RecyclerView recycler, @NonNull LiveData<List<UHfData.InventoryTagMap>> data, MutableLiveData<Integer> itemClickPosition) {
+            Log.e("select ^_*", bean != null ? bean.strEPC : "Tag数据为空");
 
-        final class RecyclerHolder extends RecyclerView.ViewHolder {
+            selectedTag.setValue(bean);
 
-            final ItemRfidBinding binding;
+            epcData.set(bean.strEPC);
+        });
 
-            public RecyclerHolder(@NonNull View itemView) {
-                super(itemView);
-                binding = DataBindingUtil.bind(itemView);
-            }
-        }
+        final String[] read6cTypes = application.getResources().getStringArray(R.array.read6c_mem);
 
-        final DecorativeAdapter<RecyclerHolder, UHfData.InventoryTagMap> adapter = new DecorativeAdapter<>(recycler.getContext(), new DecorativeAdapter.IAdapterDecorator<RecyclerHolder, UHfData.InventoryTagMap>() {
+        type.set(read6cTypes[0]);
 
+        read6cTypePosition.addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
             @Override
-            public RecyclerHolder onCreateViewHolder(@NonNull Context context, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType) {
+            public void onPropertyChanged(Observable sender, int propertyId) {
 
+                final int position = read6cTypePosition.get();
 
-                return new RecyclerHolder(inflater.inflate(R.layout.item_rfid, parent, false));
-            }
+                byte typeIndex = (byte) position;
 
-            @Override
-            public void onBindViewHolder(@NonNull Context context, @NonNull RecyclerHolder holder, @NonNull UHfData.InventoryTagMap data, int position) {
+                EPCNumberType epcNumberType = null;
 
-                holder.binding.setBean(data);
+                switch (typeIndex) {
+                    case 0:
+                        epcNumberType = EPCNumberType.RESERVED;
+                        break;
+                    case 1:
+                        epcNumberType = EPCNumberType.EPC;
+                        break;
+                    case 2:
+                        epcNumberType = EPCNumberType.TID;
+                        break;
+                    case 3:
+                        epcNumberType = EPCNumberType.USER;
+                        break;
+                }
 
-                holder.binding.getRoot().setOnClickListener(v -> itemClickPosition.setValue(position));
+                rwMem.setValue(epcNumberType);
 
+                wordMax.set((int) Objects.requireNonNull(epcNumberType).getLen());
+
+                String typeName = read6cTypes[position];
+
+                type.set(typeName);
+
+                read6cType.set(typeIndex);
             }
         });
 
-        adapter.setData(data.getValue());
-
-        recycler.setLayoutManager(new LinearLayoutManager(recycler.getContext()));
-
-        recycler.setAdapter(adapter);
-
-        data.observeForever(adapter::setData);
-
     }
+
+
+    /**
+     * @Name connectUHF
+     * @Params []
+     * @Return boolean
+     * @Author oz
+     * @Email 857527916@qq.com
+     * @Time 2018/12/20 14:17
+     * @Description 通过串口，连接RFID读写器,  return ,true connected, unable connected
+     */
+    public boolean connectUHF() {
+
+        final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
+
+        isConnected.setValue(state == 0);
+
+        return Objects.requireNonNull(isConnected.getValue());
+    }
+
+
+    /**
+     * @Name disconnectUHF
+     * @Params []
+     * @Return boolean
+     * @Author oz
+     * @Email 857527916@qq.com
+     * @Time 2018/12/20 14:23
+     * @Description 断开RFID读写器， return, true 成功，false失败
+     */
+    public boolean disconnectUHF() {
+        UHfData.lsTagList.clear();
+        UHfData.dtIndexMap.clear();
+        return UHfData.UHfGetData.CloseUHf() == 0;
+    }
+
 }

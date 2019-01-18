@@ -25,11 +25,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+<<<<<<< HEAD
 <<<<<<< .merge_file_a11152
+=======
+        <activity android:name=".ui.Dagger2Activity"></activity>
+>>>>>>> 1ce99c20516e999a80ea45d3ae8d5bb541a54f97
         <activity
             android:name=".ui.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.RFIDActivity"
             android:theme="@style/AppTheme.NoActionBar">

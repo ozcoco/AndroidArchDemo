@@ -20,15 +20,25 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.uhf.scanlable.UHfData;
 
 import org.oz.demo.R;
+import org.oz.demo.base.view.DecorativeAdapter;
+import org.oz.demo.databinding.ItemRfidBinding;
 import org.oz.demo.databinding.RfidFragmentBinding;
 import org.oz.demo.utils.ToastUtils;
 
@@ -116,32 +126,82 @@ public class RfidFragment extends Fragment {
         //important
         initComponent();
 
-        isConnected = connectUHF();
+        isConnected = mViewModel.connectUHF();
 
         initToolbar();
+
+        initRecycler();
 
         initView();
 
     }
+
+
+    private void initRecycler() {
+
+        final RecyclerView recycler = mBinding.recycler;
+
+        final class RecyclerHolder extends RecyclerView.ViewHolder {
+
+            final ItemRfidBinding binding;
+
+            public RecyclerHolder(@NonNull View itemView) {
+                super(itemView);
+                binding = DataBindingUtil.bind(itemView);
+            }
+        }
+
+        final DecorativeAdapter<RecyclerHolder, UHfData.InventoryTagMap> adapter = new DecorativeAdapter<>(recycler.getContext(), new DecorativeAdapter.IAdapterDecorator<RecyclerHolder, UHfData.InventoryTagMap>() {
+
+            @Override
+            public RecyclerHolder onCreateViewHolder(@NonNull Context context, @NonNull LayoutInflater inflater, @NonNull ViewGroup parent, int viewType) {
+
+                return new RecyclerHolder(inflater.inflate(R.layout.item_rfid, parent, false));
+            }
+
+            @Override
+            public void onBindViewHolder(@NonNull Context context, @NonNull RecyclerHolder holder, @NonNull UHfData.InventoryTagMap data, int position) {
+
+                holder.binding.setBean(data);
+
+                holder.binding.getRoot().setOnClickListener(v -> {
+
+                    mViewModel.itemClickPosition.setValue(position);
+
+                    ToastUtils.info(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "position: %d", position), Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
+
+                    Navigation.findNavController(v).navigate(R.id.action_rfid_to_editable);
+
+                });
+
+            }
+        });
+
+        adapter.setData(mViewModel.itemData.getValue());
+
+        recycler.setLayoutManager(new LinearLayoutManager(recycler.getContext()));
+
+        recycler.setAdapter(adapter);
+
+        mViewModel.itemData.observe(this, adapter::setData);
+
+    }
+
 
     private void initToolbar() {
 
         ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mBinding.toolbar);
         Objects.requireNonNull(((AppCompatActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
+        mBinding.toolbar.setNavigationOnClickListener(v -> getActivity().finish());
+
     }
 
     private void initView() {
 
-        /*** 监听Recycler点击事件 ***/
-        mViewModel.itemClickPosition.observe(this, position -> {
-
-            ToastUtils.info(Objects.requireNonNull(getContext()), String.format(Locale.CHINA, "position: %d", position), Gravity.BOTTOM, Toast.LENGTH_SHORT).show();
-
-        });
-
         /*** 设置功率 ***/
-        mViewModel.power.observe(this, power -> {
+        mViewModel.power.observe(this, power ->
+        {
 
             if (isConnected) {
 
@@ -149,7 +209,7 @@ public class RfidFragment extends Fragment {
 
             } else {
 
-                isConnected = connectUHF();
+                isConnected = mViewModel.connectUHF();
 
                 UHfData.UHfGetData.SetRfPower(power.byteValue());
             }
@@ -180,7 +240,7 @@ public class RfidFragment extends Fragment {
 
     private void initComponent() {
 
-        mViewModel = ViewModelProviders.of(this).get(RfidViewModel.class);
+        mViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(RfidViewModel.class);
 
         mBinding.setVm(mViewModel);
 
@@ -278,7 +338,7 @@ public class RfidFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        disconnectUHF();
+        mViewModel.disconnectUHF();
     }
 
     /**
@@ -362,46 +422,12 @@ public class RfidFragment extends Fragment {
 
             Snackbar.make(mBinding.recycler, "连接RFID读写器失败！", Snackbar.LENGTH_SHORT).show();
 
-            isConnected = connectUHF();
+            isConnected = mViewModel.connectUHF();
 
             scanTags();
         }
 
 
     }
-
-
-    /**
-     * @Name connectUHF
-     * @Params []
-     * @Return boolean
-     * @Author oz
-     * @Email 857527916@qq.com
-     * @Time 2018/12/20 14:17
-     * @Description 通过串口，连接RFID读写器,  return ,true connected, unable connected
-     */
-    private boolean connectUHF() {
-
-        final int state = UHfData.UHfGetData.OpenUHf("/dev/ttyMT1", 57600);
-
-        return state == 0;
-    }
-
-
-    /**
-     * @Name disconnectUHF
-     * @Params []
-     * @Return boolean
-     * @Author oz
-     * @Email 857527916@qq.com
-     * @Time 2018/12/20 14:23
-     * @Description 断开RFID读写器， return, true 成功，false失败
-     */
-    private boolean disconnectUHF() {
-        UHfData.lsTagList.clear();
-        UHfData.dtIndexMap.clear();
-        return UHfData.UHfGetData.CloseUHf() == 0;
-    }
-
 
 }

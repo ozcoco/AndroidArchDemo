@@ -21,7 +21,11 @@ import org.oz.demo.BR;
 import org.oz.demo.MainActivity;
 import org.oz.demo.R;
 import org.oz.demo.databinding.MainActivity2FragmentBinding;
+<<<<<<< HEAD
 import org.oz.demo.ui.NotificationActivity;
+=======
+import org.oz.demo.ui.Dagger2Activity;
+>>>>>>> 1ce99c20516e999a80ea45d3ae8d5bb541a54f97
 import org.oz.demo.ui.PagingActivity;
 import org.oz.demo.ui.RFIDActivity;
 
@@ -63,11 +67,21 @@ public class MainActivity2Fragment extends Fragment
 
         }
 
+<<<<<<< HEAD
         public void onNotification()
         {
             startActivity(new Intent(getContext(), NotificationActivity.class));
         }
 
+=======
+        public void onDagger2(View v) {
+
+            startActivity(new Intent(getContext(), Dagger2Activity.class));
+
+        }
+
+
+>>>>>>> 1ce99c20516e999a80ea45d3ae8d5bb541a54f97
     }
 
 
